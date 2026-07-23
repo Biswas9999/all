@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5" />
+  <title>Ranaj Vai · Premium User Panel</title>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <style>
+    /* ===== RESET & BASE ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    body { 
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 50%, #f5f3ff 100%);
+      color: #0f172a; 
+      min-height: 100vh;
+      transition: all 0.3s ease;
+    }
+    body.dark { 
+      background: linear-gradient(135deg, #0f172a 0%, #1a1a3e 50%, #1e1b4b 100%);
+      color: #f1f5f9; 
+    }
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* ===== ANIMATIONS ===== */
+    .anim-fadeIn { animation: fadeIn 0.8s ease; }
+    .anim-slideUp { animation: slideUp 0.8s ease; }
+    .anim-slideDown { animation: slideDown 0.8s ease; }
+    .anim-slideLeft { animation: slideLeft 0.8s ease; }
+    .anim-slideRight { animation: slideRight 0.8s ease; }
+    .anim-zoomIn { animation: zoomIn 0.8s ease; }
+    .anim-zoomOut { animation: zoomOut 0.8s ease; }
+    .anim-bounce { animation: bounce 0.8s ease; }
+    .anim-flash { animation: flash 0.8s ease; }
+    .anim-pulse { animation: pulse 0.8s ease; }
+    .anim-rubberBand { animation: rubberBand 0.8s ease; }
+    .anim-shakeX { animation: shakeX 0.8s ease; }
+    .anim-shakeY { animation: shakeY 0.8s ease; }
+    .anim-headShake { animation: headShake 0.8s ease; }
+    .anim-swing { animation: swing 0.8s ease; }
+    .anim-tada { animation: tada 0.8s ease; }
+    .anim-wobble { animation: wobble 0.8s ease; }
+    .anim-jello { animation: jello 0.8s ease; }
+    .anim-heartBeat { animation: heartBeat 0.8s ease; }
+    .anim-flip { animation: flip 0.8s ease; }
+    .anim-flipInX { animation: flipInX 0.8s ease; }
+    .anim-flipInY { animation: flipInY 0.8s ease; }
+    .anim-rotateIn { animation: rotateIn 0.8s ease; }
+    .anim-bounceIn { animation: bounceIn 0.8s ease; }
+    .anim-fadeInDown { animation: fadeInDown 0.8s ease; }
+    .anim-fadeInUp { animation: fadeInUp 0.8s ease; }
+    .anim-fadeInLeft { animation: fadeInLeft 0.8s ease; }
+    .anim-fadeInRight { animation: fadeInRight 0.8s ease; }
+    .anim-lightSpeedInRight { animation: lightSpeedInRight 0.8s ease; }
+    .anim-lightSpeedInLeft { animation: lightSpeedInLeft 0.8s ease; }
+    .anim-rollIn { animation: rollIn 0.8s ease; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideLeft { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes slideRight { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes zoomIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+    @keyframes zoomOut { from { opacity: 0; transform: scale(1.2); } to { opacity: 1; transform: scale(1); } }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+    @keyframes flash { 0%, 50%, 100% { opacity: 1; } 25%, 75% { opacity: 0; } }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    @keyframes rubberBand { 0% { transform: scale(1); } 30% { transform: scale(1.25, 0.75); } 40% { transform: scale(0.75, 1.25); } 50% { transform: scale(1.15, 0.85); } 65% { transform: scale(0.95, 1.05); } 75% { transform: scale(1.05, 0.95); } 100% { transform: scale(1); } }
+    @keyframes shakeX { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-10px); } 40% { transform: translateX(10px); } 60% { transform: translateX(-10px); } 80% { transform: translateX(10px); } }
+    @keyframes shakeY { 0%, 100% { transform: translateY(0); } 20% { transform: translateY(-10px); } 40% { transform: translateY(10px); } 60% { transform: translateY(-10px); } 80% { transform: translateY(10px); } }
+    @keyframes headShake { 0% { transform: translateX(0); } 25% { transform: translateX(-6px) rotateY(-9deg); } 75% { transform: translateX(6px) rotateY(9deg); } 100% { transform: translateX(0); } }
+    @keyframes swing { 20% { transform: rotate(15deg); } 40% { transform: rotate(-10deg); } 60% { transform: rotate(5deg); } 80% { transform: rotate(-5deg); } 100% { transform: rotate(0); } }
+    @keyframes tada { 0% { transform: scale(1); } 10%, 20% { transform: scale(0.9) rotate(-3deg); } 30%, 50%, 70%, 90% { transform: scale(1.1) rotate(3deg); } 40%, 60%, 80% { transform: scale(1.1) rotate(-3deg); } 100% { transform: scale(1) rotate(0); } }
+    @keyframes wobble { 0% { transform: translateX(0); } 15% { transform: translateX(-25px) rotate(-5deg); } 30% { transform: translateX(20px) rotate(3deg); } 45% { transform: translateX(-15px) rotate(-3deg); } 60% { transform: translateX(10px) rotate(2deg); } 75% { transform: translateX(-5px) rotate(-1deg); } 100% { transform: translateX(0); } }
+    @keyframes jello { 0%, 100% { transform: skewX(0) skewY(0); } 25% { transform: skewX(-12.5deg) skewY(0); } 50% { transform: skewX(6.25deg) skewY(0); } 75% { transform: skewX(-3.125deg) skewY(0); } }
+    @keyframes heartBeat { 0% { transform: scale(1); } 14% { transform: scale(1.3); } 28% { transform: scale(1); } 42% { transform: scale(1.3); } 70% { transform: scale(1); } }
+    @keyframes flip { 0% { transform: perspective(400px) rotateY(0); } 100% { transform: perspective(400px) rotateY(360deg); } }
+    @keyframes flipInX { 0% { opacity: 0; transform: perspective(400px) rotateX(90deg); } 100% { opacity: 1; transform: perspective(400px) rotateX(0); } }
+    @keyframes flipInY { 0% { opacity: 0; transform: perspective(400px) rotateY(90deg); } 100% { opacity: 1; transform: perspective(400px) rotateY(0); } }
+    @keyframes rotateIn { 0% { opacity: 0; transform: rotate(-200deg); } 100% { opacity: 1; transform: rotate(0); } }
+    @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { transform: scale(1); } }
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes fadeInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes lightSpeedInRight { from { opacity: 0; transform: translateX(100%) skewX(-30deg); } to { opacity: 1; transform: translateX(0) skewX(0); } }
+    @keyframes lightSpeedInLeft { from { opacity: 0; transform: translateX(-100%) skewX(30deg); } to { opacity: 1; transform: translateX(0) skewX(0); } }
+    @keyframes rollIn { from { opacity: 0; transform: translateX(-100%) rotate(-120deg); } to { opacity: 1; transform: translateX(0) rotate(0); } }
+
+    /* ===== COMPONENTS ===== */
+    .glass { 
+      background: rgba(255,255,255,0.7); 
+      backdrop-filter: blur(16px); 
+      border: 1px solid rgba(255,255,255,0.3); 
+      box-shadow: 0 8px 32px rgba(0,0,0,0.06); 
+    }
+    .dark .glass { 
+      background: rgba(15,23,42,0.8); 
+      border-color: rgba(255,255,255,0.05); 
+    }
+    
+    .card { 
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      border-radius: 32px; 
+      padding: 1.8rem; 
+      box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08), 0 0 0 1px rgba(255,255,255,0.1); 
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+    }
+    .dark .card { 
+      background: rgba(30,41,59,0.9);
+      border-color: rgba(255,255,255,0.05); 
+      box-shadow: 0 10px 40px -10px rgba(0,0,0,0.3);
+    }
+    .card:hover { 
+      transform: translateY(-8px) scale(1.01); 
+      box-shadow: 0 20px 60px -12px rgba(59,130,246,0.15), 0 0 0 1px rgba(59,130,246,0.1); 
+    }
+    
+    .btn { 
+      padding: 0.6rem 1.8rem; 
+      border-radius: 100px; 
+      font-weight: 600; 
+      border: none; 
+      cursor: pointer; 
+      transition: all 0.3s ease; 
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white; 
+      box-shadow: 0 4px 16px rgba(59,130,246,0.3); 
+    }
+    .btn:hover { 
+      transform: scale(1.05) translateY(-2px); 
+      box-shadow: 0 8px 30px rgba(59,130,246,0.4); 
+    }
+    .btn-outline { 
+      background: transparent; 
+      border: 2px solid #3b82f6; 
+      color: #3b82f6; 
+      box-shadow: none; 
+    }
+    .btn-outline:hover { 
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white; 
+      border-color: transparent;
+    }
+    .btn-sm { padding: 0.3rem 1.2rem; font-size: 0.8rem; }
+    .btn-success { 
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      box-shadow: 0 4px 16px rgba(34,197,94,0.3); 
+    }
+    .btn-success:hover { box-shadow: 0 8px 30px rgba(34,197,94,0.4); }
+    
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+    @media (max-width: 700px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* ===== NAVBAR ===== */
+    .navbar { 
+      padding: 1.5rem 0; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      flex-wrap: wrap; 
+      gap: 1rem; 
+    }
+    .logo { 
+      font-size: 2.2rem; 
+      font-weight: 800; 
+      letter-spacing: -0.03em; 
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; 
+      background-size: 200% 200%;
+      animation: gradientMove 4s ease infinite;
+    }
+    @keyframes gradientMove { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+    .nav-links a { 
+      font-weight: 500; 
+      opacity: 0.7; 
+      transition: all 0.3s ease; 
+      cursor: pointer; 
+      text-decoration: none; 
+      color: inherit; 
+      padding: 0.3rem 0.8rem;
+      border-radius: 60px;
+    }
+    .nav-links a:hover { opacity: 1; background: rgba(59,130,246,0.1); }
+    .nav-links a.active { 
+      opacity: 1; 
+      font-weight: 600; 
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      padding: 0.3rem 1.2rem;
+    }
+    .dark .nav-links a.active { color: white; }
+
+    /* ===== BANNER ===== */
+    .banner-slider { 
+      position: relative; 
+      border-radius: 40px; 
+      overflow: hidden; 
+      margin: 1.5rem 0; 
+      height: 320px; 
+      background: linear-gradient(135deg, #1e293b, #312e81);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    }
+    .banner-slider img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+      opacity: 0; 
+      transition: opacity 1s ease; 
+    }
+    .banner-slider img.active { opacity: 1; }
+    .banner-slider .gradient-overlay { 
+      position: absolute; 
+      bottom: 0; 
+      left: 0; 
+      right: 0; 
+      height: 70%; 
+      background: linear-gradient(transparent, rgba(0,0,0,0.7)); 
+      pointer-events: none; 
+    }
+    .banner-slider .banner-text { 
+      position: absolute; 
+      bottom: 2.5rem; 
+      left: 2.5rem; 
+      color: white; 
+      z-index: 2; 
+    }
+    .banner-slider .banner-text h2 { 
+      font-size: 2.5rem; 
+      font-weight: 800; 
+      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+      letter-spacing: -0.02em;
+    }
+    .banner-slider .banner-text p { 
+      opacity: 0.9; 
+      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+      font-size: 1.1rem;
+    }
+
+    /* ===== PROJECT CARDS ===== */
+    .project-thumb { 
+      width: 100%; 
+      height: 220px; 
+      object-fit: cover; 
+      border-radius: 24px; 
+      background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+    }
+    .project-thumb-fallback { 
+      width: 100%; 
+      height: 220px; 
+      border-radius: 24px; 
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      color: white; 
+      font-size: 4rem; 
+      font-weight: 800; 
+      text-align: center; 
+      padding: 1rem; 
+    }
+    .dark .project-thumb-fallback { 
+      background: linear-gradient(135deg, #1e3a5f, #4c1d95, #831843);
+    }
+    
+    .tag { 
+      background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+      color: #4338ca; 
+      padding: 0.2rem 0.8rem; 
+      border-radius: 100px; 
+      font-size: 0.7rem; 
+      font-weight: 600; 
+      display: inline-block; 
+      margin: 0.15rem; 
+    }
+    .dark .tag { 
+      background: linear-gradient(135deg, #334155, #1e293b);
+      color: #a5b4fc; 
+    }
+    
+    .status-badge { 
+      padding: 0.2rem 0.8rem; 
+      border-radius: 100px; 
+      font-size: 0.7rem; 
+      font-weight: 600; 
+      display: inline-block; 
+    }
+    .badge-public { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1d4ed8; }
+    .badge-locked { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #b91c1c; }
+    .badge-unlocked { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #15803d; }
+    .badge-nopass { background: linear-gradient(135deg, #e5e7eb, #d1d5db); color: #4b5563; }
+    .badge-website-lock { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #b45309; }
+    .badge-website-open { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #15803d; }
+    
+    .dark .badge-public { background: linear-gradient(135deg, #1e3a5f, #1e3a5f); color: #93c5fd; }
+    .dark .badge-locked { background: linear-gradient(135deg, #7f1d1d, #7f1d1d); color: #fca5a5; }
+    .dark .badge-unlocked { background: linear-gradient(135deg, #166534, #166534); color: #86efac; }
+    .dark .badge-nopass { background: linear-gradient(135deg, #374151, #374151); color: #9ca3af; }
+    .dark .badge-website-lock { background: linear-gradient(135deg, #78350f, #78350f); color: #fcd34d; }
+    .dark .badge-website-open { background: linear-gradient(135deg, #166534, #166534); color: #86efac; }
+
+    .section-title { 
+      font-size: 2.2rem; 
+      font-weight: 800; 
+      margin: 2.5rem 0 1.5rem; 
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #0f172a, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .dark .section-title { 
+      background: linear-gradient(135deg, #f1f5f9, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .footer { 
+      margin-top: 4rem; 
+      padding: 2.5rem 0; 
+      text-align: center; 
+      border-top: 1px solid rgba(0,0,0,0.05);
+      background: rgba(255,255,255,0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 40px 40px 0 0;
+    }
+    .dark .footer { 
+      border-color: rgba(255,255,255,0.05);
+      background: rgba(15,23,42,0.5);
+    }
+    
+    .hidden { display: none !important; }
+    .empty-state { opacity: 0.6; text-align: center; padding: 3rem; font-size: 1.2rem; }
+
+    /* ===== MODAL ===== */
+    .modal-overlay { 
+      position: fixed; 
+      inset: 0; 
+      background: rgba(0,0,0,0.5); 
+      backdrop-filter: blur(16px); 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      z-index: 1000; 
+      animation: fadeIn 0.3s ease; 
+    }
+    .modal-box { 
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 40px; 
+      padding: 2.5rem; 
+      max-width: 700px; 
+      width: 92%; 
+      max-height: 90vh; 
+      overflow-y: auto; 
+      box-shadow: 0 40px 80px rgba(0,0,0,0.2); 
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .dark .modal-box { 
+      background: rgba(30,41,59,0.95);
+      border-color: rgba(255,255,255,0.05);
+    }
+    .modal-box .close-btn { 
+      float: right; 
+      background: none; 
+      border: none; 
+      font-size: 2rem; 
+      cursor: pointer; 
+      opacity: 0.5; 
+      transition: 0.2s; 
+    }
+    .modal-box .close-btn:hover { opacity: 1; transform: rotate(90deg); }
+    
+    .password-modal input { 
+      width: 100%; 
+      padding: 0.8rem 1.2rem; 
+      border-radius: 60px; 
+      border: 2px solid #d1d5db; 
+      margin: 1rem 0; 
+      font-size: 1rem; 
+      background: rgba(255,255,255,0.8);
+      transition: 0.2s;
+    }
+    .password-modal input:focus { 
+      border-color: #3b82f6; 
+      outline: none; 
+      box-shadow: 0 0 0 4px rgba(59,130,246,0.1);
+    }
+    .dark .password-modal input { 
+      background: rgba(15,23,42,0.8); 
+      border-color: #334155; 
+      color: white; 
+    }
+    
+    .project-detail-section { margin: 1.2rem 0; }
+    .project-detail-section h4 { 
+      font-weight: 600; 
+      margin-bottom: 0.5rem; 
+      opacity: 0.7; 
+      font-size: 0.9rem; 
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .project-detail-section .code-block { 
+      background: rgba(0,0,0,0.05); 
+      padding: 1rem; 
+      border-radius: 16px; 
+      overflow: auto; 
+      max-height: 300px; 
+      font-family: 'Monaco', 'Menlo', monospace; 
+      font-size: 0.8rem; 
+      white-space: pre-wrap; 
+      word-wrap: break-word; 
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    .dark .project-detail-section .code-block { 
+      background: rgba(0,0,0,0.3); 
+      color: #e2e8f0; 
+      border-color: rgba(255,255,255,0.05);
+    }
+    
+    .live-indicator { 
+      display: inline-block; 
+      width: 10px; 
+      height: 10px; 
+      border-radius: 50%; 
+      background: #22c55e; 
+      margin-left: 0.5rem; 
+      animation: pulse 2s infinite; 
+      box-shadow: 0 0 20px rgba(34,197,94,0.3);
+    }
+    .project-card .actions { margin-top: 1.2rem; display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #2563eb, #7c3aed); }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="container navbar">
+  <span class="logo" id="siteNameDisplay">Ranaj Vai <span class="live-indicator"></span></span>
+  <div class="nav-links">
+    <a class="active" data-tab="projects">📦 Projects</a>
+    <button id="themeToggle" class="btn btn-outline btn-sm">🌓 Theme</button>
+  </div>
+</nav>
+
+<!-- ===== BANNER SLIDER ===== -->
+<div class="container banner-slider" id="bannerSlider">
+  <div class="gradient-overlay"></div>
+  <div class="banner-text">
+    <h2 id="bannerTitle">Welcome to Ranaj Vai</h2>
+    <p id="bannerSubtitle">Explore amazing projects</p>
+  </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="container">
+  <div id="tabProjects" class="tab-content">
+    <h2 class="section-title">✨ Featured Projects</h2>
+    <div id="projectGrid" class="grid-2"></div>
+  </div>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer container" id="footerTextDisplay">
+  <p style="opacity:0.7;">© 2026 Ranaj Vai · Built with ❤️</p>
+</footer>
+
+<!-- ===== MODAL CONTAINER ===== -->
+<div id="modalContainer"></div>
+
+<script>
+  // ==================== FIREBASE CONFIG (YOUR CONFIG) ====================
+  const firebaseConfig = {
+    apiKey: "AIzaSyA2q8M_DtgY6ubOpruoDseBx22y2BX6TPI",
+    authDomain: "mymovie-7a553.firebaseapp.com",
+    databaseURL: "https://mymovie-7a553-default-rtdb.firebaseio.com",
+    projectId: "mymovie-7a553",
+    storageBucket: "mymovie-7a553.firebasestorage.app",
+    messagingSenderId: "669167012801",
+    appId: "1:669167012801:web:804104c1c3f0d279e43d40",
+    measurementId: "G-KTRSGQKB6Z"
+  };
+  
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  db.enablePersistence({ synchronizeTabs: true }).catch(()=>{});
+
+  // ==================== STATE ====================
+  let projects = [];
+  let unlockedProjects = {};
+  let unlockedWebsites = {};
+  let bannerInterval = null;
+  let bannerIndex = 0;
+  let bannerImages = [];
+  let currentAnimation = 'fadeIn';
+
+  // ==================== DOM REFS ====================
+  const $ = id => document.getElementById(id);
+  const siteNameDisplay = $('siteNameDisplay');
+  const projectGrid = $('projectGrid');
+  const footerTextDisplay = $('footerTextDisplay');
+  const themeToggle = $('themeToggle');
+  const modalContainer = $('modalContainer');
+  const bannerSlider = $('bannerSlider');
+
+  // ==================== THEME ====================
+  let darkMode = false;
+  themeToggle.addEventListener('click', () => {
+    darkMode = !darkMode;
+    document.body.classList.toggle('dark', darkMode);
+  });
+
+  // ==================== LOAD ALL DATA ====================
+  function loadAllData() {
+    loadSettings();
+    loadProjectsRealtime();
+    loadBannerData();
+    loadAnimationData();
+  }
+
+  // ==================== SETTINGS (from admin) ====================
+  async function loadSettings() {
+    try {
+      const doc = await db.collection('settings').doc('main').get();
+      if (doc.exists) {
+        const d = doc.data();
+        if (d.siteName) siteNameDisplay.innerHTML = d.siteName + ' <span class="live-indicator"></span>';
+        if (d.theme === 'dark') { darkMode = true; document.body.classList.add('dark'); }
+        if (d.footerText) footerTextDisplay.innerHTML = d.footerText;
+        if (d.color) {
+          document.documentElement.style.setProperty('--primary', d.color);
+        }
+      }
+    } catch (e) { console.warn('settings', e); }
+  }
+
+  // ==================== BANNER (from admin) ====================
+  async function loadBannerData() {
+    try {
+      const doc = await db.collection('settings').doc('banner').get();
+      if (doc.exists) {
+        const d = doc.data();
+        const type = d.type || 'auto';
+        
+        // Check for cropped image first
+        if (d.croppedData) {
+          bannerImages = [d.croppedData];
+          renderBannerImages(bannerImages);
+          return;
+        }
+        
+        if (type === 'auto' && d.images && d.images.length) {
+          bannerImages = d.images;
+          renderBannerImages(bannerImages);
+          startBannerAuto(parseInt(d.speed) || 4000);
+        } else if (type === 'manual' && d.manualImage) {
+          bannerImages = [d.manualImage];
+          renderBannerImages(bannerImages);
+        } else if (type === 'youtube' && d.youtubeChannel) {
+          const channel = d.youtubeChannel.replace('@', '').trim();
+          const imgUrl = `https://img.youtube.com/vi/${channel}/maxresdefault.jpg`;
+          bannerImages = [imgUrl];
+          renderBannerImages(bannerImages);
+        } else if (type === 'custom' && d.customImage) {
+          bannerImages = [d.customImage];
+          renderBannerImages(bannerImages);
+        } else {
+          bannerImages = [
+            'https://picsum.photos/seed/b1/1200/400',
+            'https://picsum.photos/seed/b2/1200/400',
+            'https://picsum.photos/seed/b3/1200/400'
+          ];
+          renderBannerImages(bannerImages);
+          startBannerAuto(4000);
+        }
+      } else {
+        bannerImages = [
+          'https://picsum.photos/seed/b1/1200/400',
+          'https://picsum.photos/seed/b2/1200/400',
+          'https://picsum.photos/seed/b3/1200/400'
+        ];
+        renderBannerImages(bannerImages);
+        startBannerAuto(4000);
+      }
+    } catch (e) { console.warn('banner', e); }
+  }
+
+  function renderBannerImages(images) {
+    bannerSlider.innerHTML = '';
+    const overlay = document.createElement('div');
+    overlay.className = 'gradient-overlay';
+    bannerSlider.appendChild(overlay);
+    
+    const textDiv = document.createElement('div');
+    textDiv.className = 'banner-text';
+    textDiv.innerHTML = `<h2 id="bannerTitle">Welcome to Ranaj Vai</h2><p id="bannerSubtitle">Explore amazing projects</p>`;
+    bannerSlider.appendChild(textDiv);
+    
+    images.forEach((url, i) => {
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = 'Banner';
+      img.dataset.index = i;
+      if (i === 0) img.classList.add('active');
+      bannerSlider.appendChild(img);
+    });
+  }
+
+  function startBannerAuto(speed = 4000) {
+    clearInterval(bannerInterval);
+    const imgs = bannerSlider.querySelectorAll('img');
+    if (imgs.length <= 1) return;
+    bannerIndex = 0;
+    bannerInterval = setInterval(() => {
+      imgs.forEach(img => img.classList.remove('active'));
+      bannerIndex = (bannerIndex + 1) % imgs.length;
+      imgs[bannerIndex].classList.add('active');
+    }, speed);
+  }
+
+  // ==================== ANIMATION (from admin) ====================
+  async function loadAnimationData() {
+    try {
+      const doc = await db.collection('settings').doc('animation').get();
+      if (doc.exists) {
+        const d = doc.data();
+        currentAnimation = d.animation || 'fadeIn';
+        if (d.customCss) {
+          const style = document.createElement('style');
+          style.textContent = d.customCss;
+          document.head.appendChild(style);
+        }
+      }
+    } catch (e) { console.warn('animation', e); }
+  }
+
+  function getAnimationClass() {
+    return 'anim-' + currentAnimation;
+  }
+
+  // ==================== REAL-TIME PROJECTS (from admin) ====================
+  function loadProjectsRealtime() {
+    db.collection('projects')
+      .where('status', '==', 'active')
+      .where('public', '==', true)
+      .orderBy('createdAt', 'desc')
+      .onSnapshot((snapshot) => {
+        projects = [];
+        snapshot.forEach(doc => {
+          projects.push({ id: doc.id, ...doc.data() });
+        });
+        renderProjects();
+      }, (error) => {
+        console.error('Projects listener error:', error);
+        projectGrid.innerHTML = '<div class="empty-state">⚠️ Error loading projects. Please refresh.</div>';
+      });
+  }
+
+  // ==================== RENDER PROJECTS ====================
+  function renderProjects() {
+    if (!projects.length) {
+      projectGrid.innerHTML = '<div class="empty-state">No public projects available.</div>';
+      return;
+    }
+    
+    const featured = projects.filter(p => p.featured);
+    const others = projects.filter(p => !p.featured);
+    const all = [...featured, ...others];
+    const animClass = getAnimationClass();
+    
+    projectGrid.innerHTML = all.map((p, index) => {
+      const isUnlocked = unlockedProjects[p.id] || !p.password;
+      const lockStatus = p.password ? (isUnlocked ? '🔓 Unlocked' : '🔒 Locked') : '🔓 No Password';
+      const lockBadge = p.password ? (isUnlocked ? 'badge-unlocked' : 'badge-locked') : 'badge-nopass';
+      
+      const hasWebsitePass = p.websitePassword && p.websitePassword.trim() !== '';
+      const websiteStatus = hasWebsitePass ? '🔒 Website Locked' : '🔓 Website Open';
+      const websiteBadge = hasWebsitePass ? 'badge-website-lock' : 'badge-website-open';
+      
+      let thumbHtml = '';
+      if (p.thumbnail && p.thumbnail.trim() !== '') {
+        thumbHtml = `<img src="${p.thumbnail}" class="project-thumb" alt="${p.name}" loading="lazy" />`;
+      } else {
+        const initials = p.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 3);
+        thumbHtml = `<div class="project-thumb-fallback"><span>${initials || '📁'}</span></div>`;
+      }
+      
+      return `
+        <div class="card project-card ${animClass}" style="animation-delay: ${index * 0.08}s;">
+          ${thumbHtml}
+          <h3 style="margin: 0.8rem 0 0.3rem; font-size: 1.3rem; font-weight: 700;">${p.name}</h3>
+          <p style="opacity:0.7; font-size:0.95rem;">${p.shortDesc || ''}</p>
+          <div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin:0.6rem 0;">
+            ${(p.tags||'').split(',').filter(t=>t.trim()).map(t => `<span class="tag">${t.trim()}</span>`).join('')}
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin:0.4rem 0;">
+            <span class="status-badge ${lockBadge}">${lockStatus}</span>
+            ${p.openUrl ? `<span class="status-badge ${websiteBadge}">${websiteStatus}</span>` : ''}
+            ${p.featured ? '<span class="status-badge" style="background:linear-gradient(135deg,#fef3c7,#fde68a);color:#b45309;">⭐ Featured</span>' : ''}
+          </div>
+          <div class="actions">
+            ${p.openUrl ? `<button class="btn btn-sm visit-website-btn" data-id="${p.id}">🔗 Visit</button>` : ''}
+            <button class="btn btn-outline btn-sm view-details-btn" data-id="${p.id}">📄 Details</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    document.querySelectorAll('.view-details-btn').forEach(btn => {
+      btn.addEventListener('click', () => openProjectDetails(btn.dataset.id));
+    });
+    document.querySelectorAll('.visit-website-btn').forEach(btn => {
+      btn.addEventListener('click', () => handleWebsiteVisit(btn.dataset.id));
+    });
+  }
+
+  // ==================== HANDLE WEBSITE VISIT ====================
+  function handleWebsiteVisit(projectId) {
+    const project = projects.find(p => p.id === projectId);
+    if (!project || !project.openUrl) return;
+    
+    if (project.websitePassword && project.websitePassword.trim() !== '') {
+      if (unlockedWebsites[project.openUrl]) {
+        window.open(project.openUrl, '_blank');
+        return;
+      }
+      showWebsitePasswordModal(project);
+    } else {
+      window.open(project.openUrl, '_blank');
+    }
+  }
+
+  // ==================== WEBSITE PASSWORD MODAL ====================
+  function showWebsitePasswordModal(project) {
+    modalContainer.innerHTML = `
+      <div class="modal-overlay" id="passwordModal">
+        <div class="modal-box password-modal">
+          <button class="close-btn" onclick="closeModal()">✕</button>
+          <h2>🔒 Website Locked</h2>
+          <p style="opacity:0.7; margin:0.5rem 0 1rem;">
+            <strong>${project.name}</strong> requires a password to visit the website.
+          </p>
+          <input type="password" id="websitePasswordInput" placeholder="Enter website password" />
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+            <button class="btn" id="unlockWebsiteBtn">🔓 Unlock & Visit</button>
+            <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+          </div>
+          <p id="websitePasswordError" style="color:#ef4444; margin-top:0.8rem; font-size:0.9rem;"></p>
+        </div>
+      </div>
+    `;
+    
+    const passwordInput = document.getElementById('websitePasswordInput');
+    const unlockBtn = document.getElementById('unlockWebsiteBtn');
+    const passwordError = document.getElementById('websitePasswordError');
+    
+    function attemptUnlock() {
+      const entered = passwordInput.value.trim();
+      if (entered === project.websitePassword) {
+        unlockedWebsites[project.openUrl] = true;
+        closeModal();
+        window.open(project.openUrl, '_blank');
+      } else {
+        passwordError.textContent = '❌ Incorrect password. Try again.';
+        passwordInput.value = '';
+        passwordInput.focus();
+      }
+    }
+    unlockBtn.addEventListener('click', attemptUnlock);
+    passwordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') attemptUnlock(); });
+    passwordInput.focus();
+  }
+
+  // ==================== OPEN PROJECT DETAILS ====================
+  function openProjectDetails(projectId) {
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return;
+    if (project.password && !unlockedProjects[projectId]) {
+      showProjectPasswordModal(project);
+      return;
+    }
+    showProjectDetailModal(project);
+  }
+
+  // ==================== PROJECT PASSWORD MODAL ====================
+  function showProjectPasswordModal(project) {
+    modalContainer.innerHTML = `
+      <div class="modal-overlay" id="passwordModal">
+        <div class="modal-box password-modal">
+          <button class="close-btn" onclick="closeModal()">✕</button>
+          <h2>🔒 ${project.name}</h2>
+          <p style="opacity:0.7; margin:0.5rem 0 1rem;">Enter the password to view project details.</p>
+          <input type="password" id="passwordInput" placeholder="Enter project password" />
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+            <button class="btn" id="unlockBtn">🔓 Unlock</button>
+            <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+          </div>
+          <p id="passwordError" style="color:#ef4444; margin-top:0.8rem; font-size:0.9rem;"></p>
+        </div>
+      </div>
+    `;
+    
+    const passwordInput = document.getElementById('passwordInput');
+    const unlockBtn = document.getElementById('unlockBtn');
+    const passwordError = document.getElementById('passwordError');
+    
+    function attemptUnlock() {
+      const entered = passwordInput.value.trim();
+      if (entered === project.password) {
+        unlockedProjects[project.id] = true;
+        closeModal();
+        showProjectDetailModal(project);
+        renderProjects();
+      } else {
+        passwordError.textContent = '❌ Incorrect password. Try again.';
+        passwordInput.value = '';
+        passwordInput.focus();
+      }
+    }
+    unlockBtn.addEventListener('click', attemptUnlock);
+    passwordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') attemptUnlock(); });
+    passwordInput.focus();
+  }
+
+  // ==================== PROJECT DETAIL MODAL ====================
+  function showProjectDetailModal(project) {
+    const hasWebsiteCode = project.websiteCode && project.websiteCode.trim().length > 0;
+    const hasAdminCode = project.adminCode && project.adminCode.trim().length > 0;
+    const hasUserCode = project.userCode && project.userCode.trim().length > 0;
+    const hasWebsitePass = project.websitePassword && project.websitePassword.trim() !== '';
+    
+    let thumbHtml = '';
+    if (project.thumbnail && project.thumbnail.trim() !== '') {
+      thumbHtml = `<img src="${project.thumbnail}" style="max-width:100%;max-height:200px;border-radius:20px;object-fit:cover;margin:0.5rem 0;" alt="${project.name}" />`;
+    } else {
+      const initials = project.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 3);
+      thumbHtml = `<div style="background:linear-gradient(135deg,#3b82f6,#8b5cf6,#ec4899);border-radius:20px;padding:2rem;text-align:center;color:white;font-size:3.5rem;font-weight:800;margin:0.5rem 0;">${initials || '📁'}</div>`;
+    }
+    
+    modalContainer.innerHTML = `
+      <div class="modal-overlay" id="detailModal">
+        <div class="modal-box">
+          <button class="close-btn" onclick="closeModal()">✕</button>
+          <h2 style="font-size:1.8rem;">${project.name}</h2>
+          ${project.featured ? '<span class="status-badge" style="background:linear-gradient(135deg,#fef3c7,#fde68a);color:#b45309;">⭐ Featured</span>' : ''}
+          <span class="status-badge badge-public">Public</span>
+          ${project.password ? '<span class="status-badge badge-unlocked">🔓 Unlocked</span>' : '<span class="status-badge badge-nopass">🔓 No Password</span>'}
+          ${hasWebsitePass ? '<span class="status-badge badge-website-lock">🔒 Website Locked</span>' : '<span class="status-badge badge-website-open">🔓 Website Open</span>'}
+          
+          ${thumbHtml}
+          
+          <div style="margin:1rem 0;">
+            <p><strong>Category:</strong> ${project.category || 'N/A'}</p>
+            <p><strong>Tags:</strong> ${(project.tags||'').split(',').filter(t=>t.trim()).map(t => `<span class="tag">${t.trim()}</span>`).join('') || 'N/A'}</p>
+            ${project.openUrl ? `<p><strong>Website:</strong> <a href="${project.openUrl}" target="_blank" style="color:#3b82f6;">${project.openUrl}</a> ${hasWebsitePass ? '🔒 Password Required' : ''}</p>` : ''}
+            <p><strong>Description:</strong> ${project.shortDesc || 'No description'}</p>
+          </div>
+          
+          ${project.fullDesc ? `<div class="project-detail-section"><h4>📝 Full Description</h4><p>${project.fullDesc}</p></div>` : ''}
+          
+          ${hasWebsiteCode ? `<div class="project-detail-section"><h4>🌐 Website Source Code</h4><div class="code-block">${escapeHtml(project.websiteCode)}</div></div>` : ''}
+          ${hasAdminCode ? `<div class="project-detail-section"><h4>⚙️ Admin Panel Code</h4><div class="code-block">${escapeHtml(project.adminCode)}</div></div>` : ''}
+          ${hasUserCode ? `<div class="project-detail-section"><h4>👤 User Panel Code</h4><div class="code-block">${escapeHtml(project.userCode)}</div></div>` : ''}
+          
+          <div style="margin-top:1.5rem; display:flex; gap:0.6rem; flex-wrap:wrap;">
+            ${project.openUrl ? `<button class="btn visit-website-btn-detail" data-id="${project.id}">🔗 Visit Website</button>` : ''}
+            <button class="btn btn-outline" onclick="closeModal()">Close</button>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.querySelector('.visit-website-btn-detail')?.addEventListener('click', () => {
+      closeModal();
+      handleWebsiteVisit(project.id);
+    });
+  }
+
+  // ==================== CLOSE MODAL ====================
+  function closeModal() {
+    modalContainer.innerHTML = '';
+  }
+
+  // ==================== UTILITY ====================
+  function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // Close modal on backdrop click
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-overlay')) closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // ==================== INIT ====================
+  loadAllData();
+</script>
+</body>
+</html>
